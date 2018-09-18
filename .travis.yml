@@ -1,0 +1,24 @@
+# required variables (configure your pipeline to store these)
+#   DH_USERNAME: DockerHub username
+#   DH_PASSWORD: DockerHub password
+#   DH_REGISTRY: Registry hostname
+#   DH_NAMESPACE: Image namespace
+#   DH_IMAGE: Image name
+
+sudo: required
+language: bash
+services:
+- docker
+before_script:
+- docker login -u "${DH_USERNAME}" -p "${DH_PASSWORD}";
+after_script:
+- docker logout
+script:
+# prepare Makefile.properties
+- echo "DOCKERREGISTRY=${DH_REGISTRY}" > Makefile.properties
+- echo "DOCKERUSER=${DH_NAMESPACE}" >> Makefile.properties
+- echo "IMAGENAME=${DH_IMAGE}" >> Makefile.properties
+# check if example works
+- make test.example 
+# run the build/publish, see Makefile for more info
+- make publish
